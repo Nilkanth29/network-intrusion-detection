@@ -10,80 +10,187 @@ import warnings
 warnings.filterwarnings('ignore')
 import os
 
-# ── Page config ──────────────────────────────────────────────────────────────
+# Page config 
 st.set_page_config(
-    page_title="NIDS Dashboard",
-    page_icon="🛡️",
+    page_title="SENTINEL // NIDS",
+    page_icon="🔷",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ── Custom CSS ────────────────────────────────────────────────────────────────
+# Custom CSS 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap');
 
 html, body, [class*="css"] {
-    font-family: 'Rajdhani', sans-serif;
-    background-color: #0a0e1a;
-    color: #c8d6e5;
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    color: #1a2535;
 }
-.stApp { background-color: #0a0e1a; }
+.stApp { background-color: #f0f4f8; }
 
-h1, h2, h3 { font-family: 'Share Tech Mono', monospace; color: #00f5d4; }
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #0b1e3d;
+    border-right: 3px solid #1565c0;
+}
+[data-testid="stSidebar"] * { color: #cfd8e3 !important; }
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #90caf9 !important;
+    font-family: 'Barlow Condensed', sans-serif !important;
+    letter-spacing: 2px;
+}
+[data-testid="stSidebar"] .stRadio label { color: #cfd8e3 !important; }
+[data-testid="stSidebar"] hr { border-color: #1e3a5f; }
 
+/* Headers */
+h1 {
+    font-family: 'Barlow Condensed', sans-serif !important;
+    font-size: 2.6rem !important;
+    font-weight: 700 !important;
+    color: #0b1e3d !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase;
+}
+h2, h3 {
+    font-family: 'Barlow Condensed', sans-serif !important;
+    font-weight: 600 !important;
+    color: #0d47a1 !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+}
+
+/* Metric cards */
 .metric-card {
-    background: linear-gradient(135deg, #0d1b2a, #1a2744);
-    border: 1px solid #00f5d4;
-    border-radius: 8px;
-    padding: 20px;
+    background: #ffffff;
+    border-top: 4px solid #1565c0;
+    border-radius: 4px;
+    padding: 20px 16px;
     text-align: center;
-    box-shadow: 0 0 15px rgba(0,245,212,0.15);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.metric-value { font-size: 2.2rem; font-weight: 700; color: #00f5d4; font-family: 'Share Tech Mono', monospace; }
-.metric-label { font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px; }
-
-.alert-danger {
-    background: linear-gradient(135deg, #2d0a0a, #4a0f0f);
-    border: 1px solid #ff4757;
-    border-radius: 8px;
-    padding: 15px 20px;
-    margin: 8px 0;
-    color: #ff6b7a;
+.metric-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0d47a1;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.9rem;
-    box-shadow: 0 0 10px rgba(255,71,87,0.2);
+}
+.metric-label {
+    font-size: 0.75rem;
+    color: #546e7a;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+
+/* Alert cards */
+.alert-danger {
+    background: #fff5f5;
+    border-left: 5px solid #c62828;
+    border-radius: 2px;
+    padding: 12px 18px;
+    margin: 6px 0;
+    color: #b71c1c;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.88rem;
 }
 .alert-safe {
-    background: linear-gradient(135deg, #0a2d1a, #0f3d26);
-    border: 1px solid #2ed573;
-    border-radius: 8px;
-    padding: 15px 20px;
-    margin: 8px 0;
-    color: #7bed9f;
+    background: #f1f8f4;
+    border-left: 5px solid #2e7d32;
+    border-radius: 2px;
+    padding: 12px 18px;
+    margin: 6px 0;
+    color: #1b5e20;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
+.alert-info {
+    background: #e8f0fe;
+    border-left: 5px solid #1565c0;
+    border-radius: 2px;
+    padding: 12px 18px;
+    margin: 6px 0;
+    color: #0d47a1;
+    font-size: 0.88rem;
+}
+
+/* Buttons */
 .stButton > button {
-    background: linear-gradient(135deg, #00f5d4, #00b4d8);
-    color: #0a0e1a;
+    background: #1565c0;
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
-    font-family: 'Share Tech Mono', monospace;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 10px 30px;
-    transition: all 0.3s;
+    border-radius: 3px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 32px;
+    transition: all 0.2s;
 }
 .stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(0,245,212,0.4);
+    background: #0d47a1;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.3);
 }
-.sidebar .sidebar-content { background-color: #0d1b2a; }
-[data-testid="stSidebar"] { background-color: #0d1b2a; border-right: 1px solid #1a2744; }
-.stSelectbox > div > div { background-color: #0d1b2a; border-color: #00f5d4; color: #c8d6e5; }
-.stNumberInput > div > div > input { background-color: #0d1b2a; border-color: #00f5d4; color: #c8d6e5; }
-hr { border-color: #1a2744; }
+
+/* Inputs */
+.stSelectbox > div > div,
+.stNumberInput > div > div > input {
+    background-color: #ffffff;
+    border-color: #90a4ae;
+    color: #1a2535;
+    border-radius: 3px;
+}
+
+/* Divider */
+hr { border-color: #cfd8dc; }
+
+/* Top banner stripe */
+.top-banner {
+    background: linear-gradient(90deg, #0b1e3d 0%, #1565c0 60%, #0b1e3d 100%);
+    padding: 12px 24px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.banner-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+.banner-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: #90caf9;
+    letter-spacing: 2px;
+}
+.status-dot {
+    width: 10px; height: 10px;
+    background: #43a047;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    box-shadow: 0 0 6px #43a047;
+}
+.section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    color: #78909c;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #cfd8dc;
+    padding-bottom: 4px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -103,62 +210,93 @@ try:
     model_loaded = True
 except Exception as e:
     model_loaded = False
-    st.error(f"⚠️ Could not load model: {e}")
+    st.error(f"Model load error: {e}")
 
-# ── Attack colour map ─────────────────────────────────────────────────────────
+# Attack colour map 
 ATTACK_COLORS = {
-    "BENIGN":        "#2ed573",
-    "DDoS":          "#ff4757",
-    "PortScan":      "#ffa502",
-    "Bot":           "#ff6348",
-    "Infiltration":  "#eccc68",
-    "Web Attack":    "#ff6b81",
-    "DoS":           "#ff4757",
+    "BENIGN":        "#2e7d32",
+    "DDoS":          "#c62828",
+    "PortScan":      "#e65100",
+    "Bot":           "#6a1b9a",
+    "Infiltration":  "#f57f17",
+    "Web Attack":    "#ad1457",
+    "DoS":           "#b71c1c",
 }
+
+CHART_BG   = "#ffffff"
+CHART_TEXT = "#1a2535"
+CHART_GRID = "#eceff1"
+ACCENT     = "#1565c0"
 
 def get_attack_color(label):
     for k, v in ATTACK_COLORS.items():
         if k.upper() in label.upper():
             return v
-    return "#a29bfe"
+    return "#546e7a"
+
+def style_ax(ax, fig):
+    fig.patch.set_facecolor(CHART_BG)
+    ax.set_facecolor(CHART_BG)
+    ax.tick_params(colors=CHART_TEXT, labelsize=9)
+    for spine in ax.spines.values():
+        spine.set_edgecolor(CHART_GRID)
+    ax.xaxis.label.set_color(CHART_TEXT)
+    ax.yaxis.label.set_color(CHART_TEXT)
+    ax.title.set_color(ACCENT)
+    ax.grid(axis='x', color=CHART_GRID, linewidth=0.6)
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## 🛡️ NIDS Dashboard")
+    st.markdown("##SENTINEL")
+    st.markdown("#### Network Intrusion Detection System")
     st.markdown("---")
+    st.markdown('<div class="section-label" style="color:#90caf9">Operation Mode</div>', unsafe_allow_html=True)
     mode = st.radio(
-        "Select Mode",
+        "",
         ["📊 CSV Analysis", "🔬 Manual Detection", "📈 Model Insights"],
         index=0
     )
     st.markdown("---")
-    st.markdown("**Model Info**")
+    st.markdown('<div class="section-label" style="color:#90caf9">System Status</div>', unsafe_allow_html=True)
+    if model_loaded:
+        st.markdown('<span class="status-dot"></span> **MODEL ONLINE**', unsafe_allow_html=True)
+    else:
+        st.markdown(' **MODEL OFFLINE**')
+    st.markdown("")
+    st.markdown('<div class="section-label" style="color:#90caf9">Intelligence</div>', unsafe_allow_html=True)
     st.markdown("- Algorithm: `XGBoost`")
     st.markdown("- Dataset: `CICIDS 2017`")
-    st.markdown("- Classes: `DDoS, PortScan, Bot, Web Attack, BENIGN`")
+    st.markdown("- Engine: `SHAP Explainability`")
+    st.markdown("- Threats: `DDoS · PortScan · Bot · WebAttack`")
     st.markdown("---")
-    st.markdown("<small style='color:#7f8c8d'>Built by Nilkanth Changawala</small>", unsafe_allow_html=True)
+    st.markdown("<small style='color:#546e7a'>SENTINEL v1.0 // Nilkanth Changawala</small>", unsafe_allow_html=True)
 
-# ── Header ────────────────────────────────────────────────────────────────────
-st.markdown("# 🛡️ Network Intrusion Detection System")
-st.markdown("*Real-time network traffic classification powered by XGBoost + SHAP Explainability*")
-st.markdown("---")
+#  Header banner 
+st.markdown("""
+<div class="top-banner">
+    <div>
+        <div class="banner-title">🔷 SENTINEL</div>
+        <div class="banner-sub">NETWORK INTRUSION DETECTION SYSTEM &nbsp;·&nbsp; XGBOOST + SHAP INTELLIGENCE ENGINE</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+st.markdown("")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # MODE 1 — CSV Analysis
-# ══════════════════════════════════════════════════════════════════════════════
+ 
 if mode == "📊 CSV Analysis":
-    st.markdown("## 📊 CSV Batch Analysis")
-    st.markdown("Upload a network traffic CSV file to classify all flows.")
+    st.markdown("## 📊 Batch Traffic Analysis")
+    st.markdown('<div class="alert-info">Upload a network traffic CSV file — all flows will be classified and threats identified.</div>', unsafe_allow_html=True)
+    st.markdown("")
 
-    uploaded = st.file_uploader("Upload CSV", type=["csv"])
+    uploaded = st.file_uploader("Upload Network Traffic CSV", type=["csv"])
 
     if uploaded:
-        with st.spinner("Analysing traffic..."):
+        with st.spinner("🔍 Analysing traffic flows..."):
             df = pd.read_csv(uploaded)
             df.columns = df.columns.str.strip()
 
-            # Align columns
             missing = [c for c in feature_cols if c not in df.columns]
             if missing:
                 st.error(f"Missing columns: {missing[:5]}...")
@@ -171,86 +309,81 @@ if mode == "📊 CSV Analysis":
                 labels = le.inverse_transform(preds)
                 df["Prediction"] = labels
 
-                # ── Summary metrics ──
-                total     = len(df)
-                attacks   = (df["Prediction"] != "BENIGN").sum()
-                benign    = (df["Prediction"] == "BENIGN").sum()
+                total      = len(df)
+                attacks    = (df["Prediction"] != "BENIGN").sum()
+                benign     = (df["Prediction"] == "BENIGN").sum()
                 attack_pct = round(attacks / total * 100, 1)
 
+                # ── Metrics ──
+                st.markdown('<div class="section-label">Threat Summary</div>', unsafe_allow_html=True)
                 c1, c2, c3, c4 = st.columns(4)
                 with c1:
                     st.markdown(f'<div class="metric-card"><div class="metric-value">{total:,}</div><div class="metric-label">Total Flows</div></div>', unsafe_allow_html=True)
                 with c2:
-                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:#2ed573">{benign:,}</div><div class="metric-label">Benign</div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:#2e7d32">{benign:,}</div><div class="metric-label">Benign</div></div>', unsafe_allow_html=True)
                 with c3:
-                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:#ff4757">{attacks:,}</div><div class="metric-label">Attacks Detected</div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:#c62828">{attacks:,}</div><div class="metric-label">Threats Detected</div></div>', unsafe_allow_html=True)
                 with c4:
-                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:#ffa502">{attack_pct}%</div><div class="metric-label">Attack Rate</div></div>', unsafe_allow_html=True)
+                    threat_color = "#c62828" if attack_pct > 5 else "#e65100" if attack_pct > 1 else "#2e7d32"
+                    st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:{threat_color}">{attack_pct}%</div><div class="metric-label">Threat Rate</div></div>', unsafe_allow_html=True)
 
                 st.markdown("---")
 
-                # ── Attack breakdown chart ──
+                # ── Charts ──
                 col_left, col_right = st.columns(2)
+                counts = df["Prediction"].value_counts()
+                bar_colors = [get_attack_color(l) for l in counts.index]
 
                 with col_left:
-                    st.markdown("### Attack Type Breakdown")
-                    counts = df["Prediction"].value_counts()
-                    colors = [get_attack_color(l) for l in counts.index]
+                    st.markdown('<div class="section-label">Attack Type Breakdown</div>', unsafe_allow_html=True)
                     fig, ax = plt.subplots(figsize=(6, 4))
-                    fig.patch.set_facecolor('#0d1b2a')
-                    ax.set_facecolor('#0d1b2a')
-                    bars = ax.barh(counts.index, counts.values, color=colors)
-                    ax.set_xlabel("Count", color='#c8d6e5')
-                    ax.tick_params(colors='#c8d6e5')
-                    for spine in ax.spines.values():
-                        spine.set_edgecolor('#1a2744')
+                    style_ax(ax, fig)
+                    ax.barh(counts.index, counts.values, color=bar_colors, height=0.6)
+                    ax.set_xlabel("Flow Count", color=CHART_TEXT)
+                    ax.set_title("Traffic Classification", color=ACCENT, fontsize=11, fontfamily='sans-serif')
                     st.pyplot(fig)
                     plt.close()
 
                 with col_right:
-                    st.markdown("### Traffic Distribution")
+                    st.markdown('<div class="section-label">Traffic Distribution</div>', unsafe_allow_html=True)
                     fig2, ax2 = plt.subplots(figsize=(6, 4))
-                    fig2.patch.set_facecolor('#0d1b2a')
-                    ax2.set_facecolor('#0d1b2a')
-                    wedge_colors = [get_attack_color(l) for l in counts.index]
+                    fig2.patch.set_facecolor(CHART_BG)
+                    ax2.set_facecolor(CHART_BG)
                     wedges, texts, autotexts = ax2.pie(
-                        counts.values, 
-                        colors=wedge_colors,
+                        counts.values,
+                        colors=bar_colors,
                         autopct='%1.1f%%',
-                        pctdistance=0.75,
+                        pctdistance=0.78,
                         startangle=90,
-                        textprops={'color': '#c8d6e5'}
+                        textprops={'color': CHART_TEXT, 'fontsize': 9},
+                        wedgeprops={'linewidth': 2, 'edgecolor': 'white'}
                     )
-                    ax2.legend(
-                        wedges, counts.index,
-                        loc="center left",
-                        bbox_to_anchor=(-0.3, 0, 0.5, 1),
-                        fontsize=8,
-                        frameon=False,
-                        labelcolor='#c8d6e5'
-                    )
+                    ax2.legend(wedges, counts.index, loc="center left",
+                               bbox_to_anchor=(-0.3, 0, 0.5, 1),
+                               fontsize=8, frameon=False, labelcolor=CHART_TEXT)
+                    ax2.set_title("Proportion by Category", color=ACCENT, fontsize=11)
                     st.pyplot(fig2)
                     plt.close()
 
                 st.markdown("---")
 
-                # ── Attack alerts ──
-                st.markdown("### 🚨 Detected Attacks")
+                # ── Alerts ──
+                st.markdown('<div class="section-label">Threat Alerts</div>', unsafe_allow_html=True)
                 attack_df = df[df["Prediction"] != "BENIGN"][["Prediction"] + feature_cols[:5]].head(20)
                 if len(attack_df) == 0:
-                    st.markdown('<div class="alert-safe">✅ No attacks detected in this traffic sample.</div>', unsafe_allow_html=True)
+                    st.markdown('<div class="alert-safe">✅ CLEAR — No hostile traffic detected in this sample.</div>', unsafe_allow_html=True)
                 else:
                     for _, row in attack_df.iterrows():
-                        color = get_attack_color(row["Prediction"])
-                        st.markdown(f'<div class="alert-danger">⚠️ <strong>{row["Prediction"]}</strong> detected</div>', unsafe_allow_html=True)
+                        st.markdown(f'<div class="alert-danger">⚠ THREAT DETECTED &nbsp;|&nbsp; <strong>{row["Prediction"]}</strong></div>', unsafe_allow_html=True)
 
-                # ── SHAP Explanation ──
                 st.markdown("---")
-                st.markdown("### 🔍 SHAP Explainability — Why was traffic flagged?")
-                with st.spinner("Computing SHAP values..."):
+
+                # ── SHAP ──
+                st.markdown('<div class="section-label">SHAP Intelligence — Why was traffic flagged?</div>', unsafe_allow_html=True)
+                with st.spinner("Computing SHAP feature attribution..."):
                     try:
-                        explainer = shap.TreeExplainer(model)
-                        sample = X_scaled[:min(100, len(X_scaled))]
+                        explainer  = shap.TreeExplainer(model)
+                        sample     = X_scaled[:min(100, len(X_scaled))]
                         shap_values = explainer.shap_values(sample)
 
                         if isinstance(shap_values, list):
@@ -259,185 +392,176 @@ if mode == "📊 CSV Analysis":
                             shap_mean = np.abs(shap_values).mean(axis=0)
 
                         top_n = 15
-                        top_idx = np.argsort(shap_mean)[-top_n:][::-1]
+                        top_idx      = np.argsort(shap_mean)[-top_n:][::-1]
                         top_features = [feature_cols[i] for i in top_idx]
                         top_values   = shap_mean[top_idx]
 
                         fig3, ax3 = plt.subplots(figsize=(8, 5))
-                        fig3.patch.set_facecolor('#0d1b2a')
-                        ax3.set_facecolor('#0d1b2a')
-                        bars = ax3.barh(top_features[::-1], top_values[::-1], color='#00f5d4')
-                        ax3.set_xlabel("Mean |SHAP value|", color='#c8d6e5')
-                        ax3.set_title("Top Features Driving Predictions", color='#00f5d4', fontsize=13)
-                        ax3.tick_params(colors='#c8d6e5')
-                        for spine in ax3.spines.values():
-                            spine.set_edgecolor('#1a2744')
+                        style_ax(ax3, fig3)
+                        colors_shap = [ACCENT] * top_n
+                        ax3.barh(top_features[::-1], top_values[::-1], color=colors_shap, height=0.6)
+                        ax3.set_xlabel("Mean |SHAP Value|", color=CHART_TEXT)
+                        ax3.set_title("Top Features Driving Threat Predictions", color=ACCENT, fontsize=12)
                         st.pyplot(fig3)
                         plt.close()
                     except Exception as e:
                         st.warning(f"SHAP computation skipped: {e}")
 
-                # ── Download results ──
                 st.markdown("---")
                 csv_out = df[["Prediction"] + feature_cols[:10]].to_csv(index=False)
-                st.download_button("⬇️ Download Results CSV", csv_out, "nids_results.csv", "text/csv")
+                st.download_button("⬇ Export Results (CSV)", csv_out, "sentinel_results.csv", "text/csv")
 
-# ══════════════════════════════════════════════════════════════════════════════
 # MODE 2 — Manual Detection
-# ══════════════════════════════════════════════════════════════════════════════
+
 elif mode == "🔬 Manual Detection":
-    st.markdown("## 🔬 Manual Flow Detection")
-    st.markdown("Enter network flow features manually to classify a single connection.")
+    st.markdown("## 🔬 Manual Flow Analysis")
+    st.markdown('<div class="alert-info">Enter network flow parameters manually to classify a single connection.</div>', unsafe_allow_html=True)
+    st.markdown("")
 
-    st.markdown("### Common Network Flow Parameters")
-
+    st.markdown('<div class="section-label">Flow Parameters</div>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
     with col1:
-        dest_port        = st.number_input("Destination Port", 0, 65535, 80)
-        flow_duration    = st.number_input("Flow Duration (μs)", 0, 10000000, 1000)
-        fwd_packets      = st.number_input("Total Fwd Packets", 0, 10000, 10)
-        bwd_packets      = st.number_input("Total Bwd Packets", 0, 10000, 5)
+        dest_port     = st.number_input("Destination Port",    0, 65535,    80)
+        flow_duration = st.number_input("Flow Duration (μs)",  0, 10000000, 1000)
+        fwd_packets   = st.number_input("Total Fwd Packets",   0, 10000,    10)
+        bwd_packets   = st.number_input("Total Bwd Packets",   0, 10000,    5)
     with col2:
-        fwd_bytes        = st.number_input("Total Fwd Bytes", 0, 1000000, 500)
-        bwd_bytes        = st.number_input("Total Bwd Bytes", 0, 1000000, 200)
-        flow_bytes_s     = st.number_input("Flow Bytes/s", 0.0, 10000000.0, 1000.0)
-        flow_packets_s   = st.number_input("Flow Packets/s", 0.0, 100000.0, 10.0)
+        fwd_bytes     = st.number_input("Total Fwd Bytes",     0, 1000000,  500)
+        bwd_bytes     = st.number_input("Total Bwd Bytes",     0, 1000000,  200)
+        flow_bytes_s  = st.number_input("Flow Bytes/s",        0.0, 10000000.0, 1000.0)
+        flow_pkt_s    = st.number_input("Flow Packets/s",      0.0, 100000.0,   10.0)
     with col3:
-        syn_flag         = st.number_input("SYN Flag Count", 0, 100, 1)
-        ack_flag         = st.number_input("ACK Flag Count", 0, 100, 5)
-        psh_flag         = st.number_input("PSH Flag Count", 0, 100, 2)
-        fin_flag         = st.number_input("FIN Flag Count", 0, 100, 1)
+        syn_flag      = st.number_input("SYN Flag Count",      0, 100, 1)
+        ack_flag      = st.number_input("ACK Flag Count",      0, 100, 5)
+        psh_flag      = st.number_input("PSH Flag Count",      0, 100, 2)
+        fin_flag      = st.number_input("FIN Flag Count",      0, 100, 1)
 
-    if st.button("🔍 Analyse Flow"):
-        # Build feature row with zeros for all features, fill in known ones
+    st.markdown("")
+    if st.button("🔍 ANALYSE FLOW"):
         row = {col: 0.0 for col in feature_cols}
         mapping = {
-            "Destination Port": dest_port,
-            "Flow Duration": flow_duration,
-            "Total Fwd Packets": fwd_packets,
-            "Total Backward Packets": bwd_packets,
-            "Total Length of Fwd Packets": fwd_bytes,
-            "Total Length of Bwd Packets": bwd_bytes,
-            "Flow Bytes/s": flow_bytes_s,
-            "Flow Packets/s": flow_packets_s,
-            "SYN Flag Count": syn_flag,
-            "ACK Flag Count": ack_flag,
-            "PSH Flag Count": psh_flag,
-            "FIN Flag Count": fin_flag,
+            "Destination Port":              dest_port,
+            "Flow Duration":                 flow_duration,
+            "Total Fwd Packets":             fwd_packets,
+            "Total Backward Packets":        bwd_packets,
+            "Total Length of Fwd Packets":   fwd_bytes,
+            "Total Length of Bwd Packets":   bwd_bytes,
+            "Flow Bytes/s":                  flow_bytes_s,
+            "Flow Packets/s":                flow_pkt_s,
+            "SYN Flag Count":                syn_flag,
+            "ACK Flag Count":                ack_flag,
+            "PSH Flag Count":                psh_flag,
+            "FIN Flag Count":                fin_flag,
         }
         for k, v in mapping.items():
             if k in row:
                 row[k] = float(v)
 
-        X = pd.DataFrame([row])[feature_cols]
+        X        = pd.DataFrame([row])[feature_cols]
         X_scaled = scaler.transform(X)
-        pred = model.predict(X_scaled)[0]
-        label = le.inverse_transform([pred])[0]
-        proba = model.predict_proba(X_scaled)[0]
+        pred     = model.predict(X_scaled)[0]
+        label    = le.inverse_transform([pred])[0]
+        proba    = model.predict_proba(X_scaled)[0]
         confidence = round(max(proba) * 100, 2)
 
         st.markdown("---")
-        color = get_attack_color(label)
+        st.markdown('<div class="section-label">Classification Result</div>', unsafe_allow_html=True)
         if label == "BENIGN":
-            st.markdown(f'<div class="alert-safe">✅ <strong>BENIGN</strong> — Normal traffic detected | Confidence: {confidence}%</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="alert-safe">✅ STATUS: CLEAR &nbsp;|&nbsp; Classification: <strong>BENIGN</strong> &nbsp;|&nbsp; Confidence: {confidence}%</div>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<div class="alert-danger">🚨 <strong>ATTACK DETECTED: {label}</strong> | Confidence: {confidence}%</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="alert-danger">⚠ STATUS: THREAT &nbsp;|&nbsp; Classification: <strong>{label}</strong> &nbsp;|&nbsp; Confidence: {confidence}%</div>', unsafe_allow_html=True)
 
-        # Probability breakdown
-        st.markdown("### Prediction Confidence Breakdown")
-        classes = le.classes_
-        prob_df = pd.DataFrame({"Attack Type": classes, "Probability": proba}).sort_values("Probability", ascending=False)
+        st.markdown("")
+        st.markdown('<div class="section-label">Probability Breakdown by Threat Class</div>', unsafe_allow_html=True)
+        classes  = le.classes_
+        prob_df  = pd.DataFrame({"Attack Type": classes, "Probability": proba}).sort_values("Probability", ascending=False)
 
         fig, ax = plt.subplots(figsize=(8, 4))
-        fig.patch.set_facecolor('#0d1b2a')
-        ax.set_facecolor('#0d1b2a')
+        style_ax(ax, fig)
         bar_colors = [get_attack_color(c) for c in prob_df["Attack Type"]]
-        ax.barh(prob_df["Attack Type"], prob_df["Probability"], color=bar_colors)
-        ax.set_xlabel("Probability", color='#c8d6e5')
-        ax.tick_params(colors='#c8d6e5')
-        for spine in ax.spines.values():
-            spine.set_edgecolor('#1a2744')
+        ax.barh(prob_df["Attack Type"], prob_df["Probability"], color=bar_colors, height=0.55)
+        ax.set_xlabel("Probability", color=CHART_TEXT)
+        ax.set_title("Threat Class Probabilities", color=ACCENT, fontsize=11)
         st.pyplot(fig)
         plt.close()
 
-        # SHAP for this single prediction
-        st.markdown("### 🔍 Why this prediction?")
+        st.markdown("")
+        st.markdown('<div class="section-label">SHAP Feature Attribution</div>', unsafe_allow_html=True)
         with st.spinner("Computing SHAP explanation..."):
             try:
                 explainer = shap.TreeExplainer(model)
                 shap_vals = explainer.shap_values(X_scaled)
-                if isinstance(shap_vals, list):
-                    sv = shap_vals[pred]
-                else:
-                    sv = shap_vals[0]
+                sv = shap_vals[pred] if isinstance(shap_vals, list) else shap_vals[0]
 
-                feat_importance = list(zip(feature_cols, sv))
-                feat_importance.sort(key=lambda x: abs(x[1]), reverse=True)
-                top = feat_importance[:10]
-
+                feat_importance = sorted(zip(feature_cols, sv), key=lambda x: abs(x[1]), reverse=True)
+                top    = feat_importance[:10]
                 names  = [f[0] for f in top]
                 values = [f[1] for f in top]
-                colors = ['#ff4757' if v > 0 else '#2ed573' for v in values]
+                colors = ['#c62828' if v > 0 else '#2e7d32' for v in values]
 
                 fig2, ax2 = plt.subplots(figsize=(8, 4))
-                fig2.patch.set_facecolor('#0d1b2a')
-                ax2.set_facecolor('#0d1b2a')
-                ax2.barh(names[::-1], values[::-1], color=colors[::-1])
-                ax2.axvline(0, color='#c8d6e5', linewidth=0.8)
-                ax2.set_xlabel("SHAP Value (red = increases attack probability)", color='#c8d6e5')
-                ax2.set_title("Feature Contributions to This Prediction", color='#00f5d4')
-                ax2.tick_params(colors='#c8d6e5')
-                for spine in ax2.spines.values():
-                    spine.set_edgecolor('#1a2744')
+                style_ax(ax2, fig2)
+                ax2.barh(names[::-1], values[::-1], color=colors[::-1], height=0.55)
+                ax2.axvline(0, color='#90a4ae', linewidth=1)
+                ax2.set_xlabel("SHAP Value  (red → threat signal  |  green → benign signal)", color=CHART_TEXT)
+                ax2.set_title("Feature Contributions to This Classification", color=ACCENT, fontsize=11)
                 st.pyplot(fig2)
                 plt.close()
             except Exception as e:
                 st.warning(f"SHAP skipped: {e}")
 
-# ══════════════════════════════════════════════════════════════════════════════
 # MODE 3 — Model Insights
-# ══════════════════════════════════════════════════════════════════════════════
-elif mode == "📈 Model Insights":
-    st.markdown("## 📈 Model Insights")
 
+elif mode == "📈 Model Insights":
+    st.markdown("## 📈 System Intelligence")
+    st.markdown("")
+
+    st.markdown('<div class="section-label">System Specifications</div>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="metric-card"><div class="metric-value">XGBoost</div><div class="metric-label">Algorithm</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="metric-card"><div class="metric-value">CICIDS 2017</div><div class="metric-label">Dataset</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="metric-card"><div class="metric-value">CICIDS 2017</div><div class="metric-label">Training Dataset</div></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="metric-card"><div class="metric-value" style="color:#2ed573">Research Grade</div><div class="metric-label">Dataset Quality</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="metric-card"><div class="metric-value" style="color:#2e7d32; font-size:1.4rem">OPERATIONAL</div><div class="metric-label">System Status</div></div>', unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### Attack Classes Detected")
+    st.markdown('<div class="section-label">Threat Classification Matrix</div>', unsafe_allow_html=True)
     attack_info = {
-        "BENIGN":       ("Normal network traffic", "#2ed573"),
-        "DDoS":         ("Distributed Denial of Service — floods target with traffic", "#ff4757"),
-        "PortScan":     ("Reconnaissance attack scanning for open ports", "#ffa502"),
-        "Bot":          ("Automated malicious bot activity", "#ff6348"),
-        "Web Attack":   ("SQL injection, XSS, brute force web attacks", "#ff6b81"),
-        "Infiltration": ("Internal network infiltration attempts", "#eccc68"),
-        "DoS":          ("Denial of Service attack variants", "#a29bfe"),
+        "BENIGN":       ("Normal authorised network traffic", "#2e7d32"),
+        "DDoS":         ("Distributed Denial of Service — coordinated traffic flood", "#c62828"),
+        "PortScan":     ("Reconnaissance — systematic scanning for open ports", "#e65100"),
+        "Bot":          ("Automated malicious bot activity on the network", "#6a1b9a"),
+        "Web Attack":   ("SQL injection, XSS, and brute force against web services", "#ad1457"),
+        "Infiltration": ("Internal network infiltration and lateral movement", "#f57f17"),
+        "DoS":          ("Single-source Denial of Service attack variants", "#b71c1c"),
     }
     for attack, (desc, color) in attack_info.items():
-        st.markdown(f'<div style="border-left: 4px solid {color}; padding: 10px 15px; margin: 6px 0; background: #0d1b2a; border-radius: 4px;"><strong style="color:{color}">{attack}</strong> — {desc}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div style="border-left:4px solid {color}; padding:10px 16px; margin:5px 0; '
+            f'background:#ffffff; border-radius:2px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">'
+            f'<strong style="color:{color}; font-family:\'Barlow Condensed\',sans-serif; '
+            f'font-size:1.05rem; letter-spacing:1px">{attack}</strong>'
+            f'<span style="color:#546e7a; font-size:0.9rem; margin-left:12px">{desc}</span></div>',
+            unsafe_allow_html=True
+        )
 
     st.markdown("---")
-    st.markdown("### How SHAP Explainability Works")
+    st.markdown('<div class="section-label">SHAP Intelligence Engine</div>', unsafe_allow_html=True)
     st.markdown("""
-    SHAP (SHapley Additive exPlanations) explains **why** the model made a specific prediction:
-    
-    - 🔴 **Red bars** → feature pushes prediction toward "Attack"
-    - 🟢 **Green bars** → feature pushes prediction toward "Benign"  
-    - **Bar length** → how much influence that feature had
-    
-    This is what makes this project advanced — not just detecting attacks, but explaining the reasoning behind each alert like a real SOC analyst tool.
+    SHAP (SHapley Additive exPlanations) provides analyst-grade reasoning for every classification:
+
+    - 🔴 **Red bars** — feature increases threat probability
+    - 🟢 **Green bars** — feature supports benign classification
+    - **Bar magnitude** — strength of that feature's influence on the decision
+
+    This transforms raw ML predictions into interpretable, actionable intelligence — the standard expected in real Security Operations Centres.
     """)
 
     st.markdown("---")
-    st.markdown("### Tech Stack")
-    cols = st.columns(4)
-    techs = [("Python", "#3776ab"), ("XGBoost", "#ff6348"), ("SHAP", "#00f5d4"), ("Streamlit", "#ff4b4b")]
+    st.markdown('<div class="section-label">Technology Stack</div>', unsafe_allow_html=True)
+    cols   = st.columns(4)
+    techs  = [("Python", "#1565c0"), ("XGBoost", "#e65100"), ("SHAP", "#6a1b9a"), ("Streamlit", "#c62828")]
     for col, (tech, color) in zip(cols, techs):
         with col:
-            st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:{color}; font-size:1.4rem">{tech}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-card"><div class="metric-value" style="color:{color}; font-size:1.5rem">{tech}</div></div>', unsafe_allow_html=True)
