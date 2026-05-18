@@ -1,10 +1,9 @@
-# Network Intrusion Detection System 🔐
+# Network Intrusion Detection System ??
 
-A real-time network intrusion detection system that classifies network traffic 
-into 12 attack categories using machine learning, with live packet capture.
+A real-time network intrusion detection system that classifies network traffic into 12 attack categories using machine learning, with live packet capture and an interactive Streamlit dashboard.
 
 ## Results
-| Model | Accuracy | 
+| Model | Accuracy |
 |---|---|
 | Random Forest | 98.76% |
 | XGBoost | 98.81% |
@@ -22,30 +21,24 @@ into 12 attack categories using machine learning, with live packet capture.
 | DoS Slowhttptest | 0.99 |
 | DoS slowloris | 0.99 |
 | Web Attack Brute Force | 0.73 |
-| Other | 0.51 |
 
-## Key Features
+## Project Structure
+## Features
 - Trained on 2.8 million real network flow records (CICIDS 2017)
 - Handles severe class imbalance using SMOTE oversampling
 - Multi-class classification across 12 attack types
 - Real-time live packet capture and classification using Scapy
+- Interactive Streamlit dashboard for visualization
 
 ## Tech Stack
-Python, XGBoost, Scikit-learn, Scapy, Pandas, SMOTE
+Python, XGBoost, Scikit-learn, Scapy, Streamlit, Pandas, SMOTE
 
 ## How to Run
 
+### Install dependencies
 ### Train the model
-```
-pip install -r requirements.txt
-jupyter notebook notebooks/nids.ipynb
-```
-
-### Run live capture (requires admin/root)
-```
-python notebooks/live_capture.py
-```
-
+### Launch the Streamlit dashboard
+### Run live capture (requires admin)
 ## Dataset
-CICIDS 2017 — Canadian Institute for Cybersecurity
+CICIDS 2017 � Canadian Institute for Cybersecurity
 https://www.unb.ca/cic/datasets/ids-2017.html
