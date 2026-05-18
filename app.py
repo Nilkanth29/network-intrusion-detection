@@ -198,11 +198,11 @@ hr { border-color: #cfd8dc; }
 @st.cache_resource
 def load_model():
     base = os.path.dirname(os.path.abspath(__file__))
-    notebooks = os.path.join(base, "notebooks")
-    model        = joblib.load(os.path.join(notebooks, "xgb_model.pkl"))
-    scaler       = joblib.load(os.path.join(notebooks, "scaler.pkl"))
-    le           = joblib.load(os.path.join(notebooks, "label_encoder.pkl"))
-    feature_cols = joblib.load(os.path.join(notebooks, "feature_cols.pkl"))
+    models = os.path.join(base, "models")
+    model = joblib.load(os.path.join(models, "xgb_model.pkl"))
+    scaler = joblib.load(os.path.join(models, "scaler.pkl"))
+    le = joblib.load(os.path.join(models, "label_encoder.pkl"))
+    feature_cols = joblib.load(os.path.join(models, "feature_cols.pkl"))
     return model, scaler, le, feature_cols
 
 try:
